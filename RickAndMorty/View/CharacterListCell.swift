@@ -1,5 +1,6 @@
 import UIKit
 
+
 class CharacterListCell: UITableViewCell {
     private let containerView = CustomContainerView()
     private let characterImage = CustomImageView()
@@ -62,9 +63,9 @@ class CharacterListCell: UITableViewCell {
     
     func configure(with character: Character) {
         nameLabel.text = character.name
-        statusLabel.text = character.status.rawValue
-        speciesLabel.text = character.species.rawValue
-        characterImage.loadImage(from: character.image)
+        statusLabel.text = character.status?.rawValue
+        speciesLabel.text = character.species?.rawValue
+        characterImage.loadImage(from: character.image ?? "")
     }
 }
 

@@ -44,8 +44,8 @@ class CharacterGridCell: UICollectionViewCell {
     
     func configure(with character: Character) {
         nameLabel.text = character.name
-        statusLabel.text = character.status.rawValue
-        speciesLabel.text = character.species.rawValue
-        imageView.loadImage(from: character.image)
+        statusLabel.text = character.status?.rawValue
+        speciesLabel.text = character.species?.rawValue
+        imageView.loadImage(from: character.image ?? "")
     }
 }

@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+import SDWebImage
 
 class CharacterListVC: UIViewController {
     
@@ -26,7 +27,7 @@ class CharacterListVC: UIViewController {
         tableView.backgroundColor = .systemBackground
         return tableView
     }()
-
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -94,8 +95,8 @@ class CharacterListVC: UIViewController {
         tableView.dataSource = self
         collectionView.delegate = self
         collectionView.dataSource = self
-        searchController.searchResultsUpdater = self
-        searchController.searchBar.delegate = self
+        //searchController.searchResultsUpdater = self
+        //searchController.searchBar.delegate = self
     }
     
     private func setupBindings() {
@@ -114,6 +115,20 @@ class CharacterListVC: UIViewController {
         
         let imageName = isTableView ? "square.grid.2x2" : "list.bullet"
         navigationItem.rightBarButtonItem?.image = UIImage(systemName: imageName)
+    }
+}
+
+
+// MARK: - UIImageView
+extension UIImageView {
+    func loadImage(from urlString: String?) {
+        guard let urlString = urlString, let url = URL(string: urlString) else { return }
+        self.sd_setImage(
+            with: url,
+            placeholderImage: UIImage(named: "placeholder"),
+            options: [.retryFailed, .continueInBackground],
+            completed: nil
+        )
     }
 }
 
@@ -175,16 +190,18 @@ extension CharacterListVC: UICollectionViewDelegateFlowLayout{
         let width = (collectionView.bounds.width - 48) / 2
         return CGSize(width: width, height: width * 1.5)
     }
-}
-
-extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-        guard let searchText = searchController.searchBar.text else { return }
-        viewModel.searchCharacters(with: searchText)
-    }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.downloadCharacters()
-    }
 }
-
+    /*
+     extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
+     func updateSearchResults(for searchController: UISearchController) {
+     guard let searchText = searchController.searchBar.text else { return }
+     //viewModel.searchCharacters(with: searchText)
+     }
+     
+     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+     viewModel.downloadCharacters()
+     }
+     }
+     */
+    

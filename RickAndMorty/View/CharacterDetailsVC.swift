@@ -114,18 +114,18 @@ class CharacterDetailsVC: UIViewController {
         title = character.name
         
         nameLabel.text = character.name
-        statusLabel.text = character.status.rawValue
-        speciesLabel.text = character.species.rawValue
+        statusLabel.text = character.status?.rawValue
+        speciesLabel.text = character.species?.rawValue
         
         locationTitleLabel.text = "Last Known Location:"
-        locationLabel.text = character.location.name
+        locationLabel.text = character.location?.name
         
         originTitleLabel.text = "Origin:"
-        originLabel.text = character.origin.name
+        originLabel.text = character.origin?.name
         
         genderTitleLabel.text = "Gender:"
-        genderLabel.text = character.gender.rawValue
+        genderLabel.text = character.gender?.rawValue
         
-        characterImage.loadImage(from: character.image)
+        characterImage.loadImage(from: character.image ?? "")
     }
 }
