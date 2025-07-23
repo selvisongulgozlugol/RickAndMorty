@@ -43,7 +43,7 @@ class RickAndMortyVM {
         
         Task {
             do {
-                let response = try await service.searchCharacter(parametres: ["name" : query])
+                let response = try await service.searchCharacters(parameters: ["name" : query])
                 await MainActor.run {
                     self.characters = response.results ?? []
                     self.isLoading = false

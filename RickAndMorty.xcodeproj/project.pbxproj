@@ -135,7 +135,6 @@
 			name = RickAndMorty;
 			packageProductDependencies = (
 				B49205A12E27FDAC00DF274E /* Alamofire */,
-				B49205A32E27FDAC00DF274E /* AlamofireDynamic */,
 				B49205CF2E283A0800DF274E /* SDWebImage */,
 				B49205D12E283A0800DF274E /* SDWebImageMapKit */,
 			);
@@ -611,11 +610,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B49205752E27FB2E00DF274E /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		B49205A32E27FDAC00DF274E /* AlamofireDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B49205752E27FB2E00DF274E /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = AlamofireDynamic;
 		};
 		B49205CF2E283A0800DF274E /* SDWebImage */ = {
 			isa = XCSwiftPackageProductDependency;

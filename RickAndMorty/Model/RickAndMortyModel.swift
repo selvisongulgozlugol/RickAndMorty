@@ -6,8 +6,8 @@ struct APIResponse: Decodable {
 }
 
 struct Info: Decodable {
-    let count: Int
-    let pages:Int
+    let count: Int?
+    let pages:Int?
     let prev: String?
     let next: String?
 }
@@ -26,6 +26,11 @@ struct Character: Decodable {
     let created: String?
 }
 
+struct Location: Decodable {
+    let name: String?
+    let url: String?
+}
+
 enum CharacterSpecies: String, Decodable {
     case alien = "Alien"
     case human = "Human"
@@ -41,9 +46,4 @@ enum CharacterGender: String, Decodable {
     case female = "Female"
     case male = "Male"
     case unknown = "unknown"
-}
-
-struct Location: Decodable {
-    let name: String
-    let url: String
 }

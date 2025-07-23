@@ -119,18 +119,6 @@ class CharacterListVC: UIViewController {
 }
 
 
-// MARK: - UIImageView
-extension UIImageView {
-    func loadImage(from urlString: String?) {
-        guard let urlString = urlString, let url = URL(string: urlString) else { return }
-        self.sd_setImage(
-            with: url,
-            placeholderImage: UIImage(named: "placeholder"),
-            options: [.retryFailed, .continueInBackground],
-            completed: nil
-        )
-    }
-}
 
 // MARK: - TableView
 extension CharacterListVC: UITableViewDataSource {
@@ -192,16 +180,16 @@ extension CharacterListVC: UICollectionViewDelegateFlowLayout{
     }
     
 }
-    /*
-     extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
-     func updateSearchResults(for searchController: UISearchController) {
-     guard let searchText = searchController.searchBar.text else { return }
-     //viewModel.searchCharacters(with: searchText)
-     }
-     
-     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-     viewModel.downloadCharacters()
-     }
-     }
-     */
-    
+/*
+ extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
+ func updateSearchResults(for searchController: UISearchController) {
+ guard let searchText = searchController.searchBar.text else { return }
+ //viewModel.searchCharacters(with: searchText)
+ }
+ 
+ func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+ viewModel.downloadCharacters()
+ }
+ }
+ */
+
