@@ -7,7 +7,10 @@ class RickAndMortyVM {
     private(set) var errorMessage: String?
     var onCharactersUpdated: (() -> Void)?
     
-    private let service = RickAndMortyService.shared
+    private let service : RickAndServiceProtocol
+    init(service: RickAndServiceProtocol){
+        self.service = service
+    }
     
     
     func downloadCharacters() {

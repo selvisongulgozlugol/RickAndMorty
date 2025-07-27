@@ -8,7 +8,11 @@ protocol NetworkServiceProtocol {
 }
 
 final class NetworkService: NetworkServiceProtocol {
-    func request<T>(url: String, parameters: [String : String]?, responseType: T.Type) async throws -> T where T : Decodable {
+    
+    static let shared = NetworkService()
+    private init(){}
+    
+    func request<T: Decodable>(url: String, parameters: [String : String]?, responseType: T.Type) async throws -> T {
         guard let url = URL(string: url) else {
             throw NetworkError.invalidURL
         }
