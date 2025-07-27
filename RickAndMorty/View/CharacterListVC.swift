@@ -5,10 +5,9 @@ import SDWebImage
 class CharacterListVC: UIViewController {
     
     // MARK: -Properties
+    private var viewModel: RickAndMortyVM!
     private var characters: [Character] = []
     private var isLoading = false
-    
-    private let viewModel = RickAndMortyVM()
     private var isTableView = true
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
