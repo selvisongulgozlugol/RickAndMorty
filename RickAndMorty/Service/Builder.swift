@@ -2,21 +2,15 @@ import Foundation
 
 class RickAndMortyBuilder {
     
-    static let shared = RickAndMortyBuilder()
-    private init(){}
-    
-    private lazy var networkService: NetworkServiceProtocol = {
-        return NetworkService.shared
-    }()
-    
-    private lazy var rickAndService: RickAndServiceProtocol = {
-        return RickAndMortyService(networkService: networkService)
-    }()
-    
-    func buildRickAndMortyService() -> RickAndServiceProtocol {
-        return rickAndService
+    static func generate() -> CharacterListVC {
+        
+        let networkService = NetworkService.shared
+        let rickAndMortyService: RickAndServiceProtocol = RickAndMortyService(networkService: networkService)
+        let viewModel = RickAndMortyVM(service: rickAndMortyService)
+        let characterListVC = CharacterListVC()
+        
+        characterListVC.setViewModel(viewModel)
+        
+        return characterListVC
     }
-    
-    func buildRickAndMortyViewModel() -> RickAndMortyVM {
-        return RickAndMortyVM(service: rickAndService)
-    }}
+}
