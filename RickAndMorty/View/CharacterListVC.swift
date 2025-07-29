@@ -18,6 +18,11 @@ class CharacterListVC: UIViewController {
         super.init(coder: coder)
     }
     
+    // MARK: - Dependency Injection
+    func setViewModel(_ viewModel: RickAndMortyVM) {
+        self.viewModel = viewModel
+    }
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false

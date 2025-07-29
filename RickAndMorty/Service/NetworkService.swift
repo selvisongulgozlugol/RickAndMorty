@@ -1,5 +1,4 @@
 import Foundation
-import Alamofire
 
 //MARK: - Network Service
 
@@ -13,12 +12,20 @@ final class NetworkService: NetworkServiceProtocol {
     private init(){}
     
     func request<T: Decodable>(url: String, parameters: [String : String]?, responseType: T.Type) async throws -> T {
-        guard let url = URL(string: url) else {
+        // Parameters varsa URL'e ekle
+        var urlString = url
+        if let parameters = parameters {
+            let queryString = parameters.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+            urlString += "?" + queryString
+        }
+        
+        guard let finalURL = URL(string: urlString) else {
             throw NetworkError.invalidURL
         }
         
         do {
-            let response = try await AF.request(url, parameters: parameters).serializingDecodable(responseType).value
+            let (data, _) = try await URLSession.shared.data(from: finalURL)
+            let response = try JSONDecoder().decode(responseType, from: data)
             return response
         } catch {
             throw NetworkError.decodingError

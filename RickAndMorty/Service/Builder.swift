@@ -1,14 +1,13 @@
 import Foundation
+import UIKit
 
-class RickAndMortyBuilder {
+enum RickAndMortyBuilder {
     
-    static func generate() -> CharacterListVC {
-        
+    static func generate() -> UIViewController {
         let networkService = NetworkService.shared
         let rickAndMortyService: RickAndServiceProtocol = RickAndMortyService(networkService: networkService)
         let viewModel = RickAndMortyVM(service: rickAndMortyService)
         let characterListVC = CharacterListVC()
-        
         characterListVC.setViewModel(viewModel)
         
         return characterListVC
