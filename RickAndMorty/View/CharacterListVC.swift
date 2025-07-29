@@ -99,8 +99,8 @@ class CharacterListVC: UIViewController {
         tableView.dataSource = self
         collectionView.delegate = self
         collectionView.dataSource = self
-        //searchController.searchResultsUpdater = self
-        //searchController.searchBar.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.delegate = self
     }
     
     private func setupBindings() {
@@ -184,16 +184,21 @@ extension CharacterListVC: UICollectionViewDelegateFlowLayout{
     }
     
 }
-/*
- extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
- func updateSearchResults(for searchController: UISearchController) {
- guard let searchText = searchController.searchBar.text else { return }
- //viewModel.searchCharacters(with: searchText)
- }
- 
- func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
- viewModel.downloadCharacters()
- }
- }
- */
+
+// MARK: - Search
+extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchText = searchController.searchBar.text ?? ""
+        // Local filtering olduğu için anlık arama yapabiliyoruz
+        viewModel.filterCharacter(with: searchText)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.filterCharacter(with: "")
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+}
 
