@@ -21,6 +21,7 @@ class CharacterListVC: UIViewController {
     // MARK: - Dependency Injection
     func setViewModel(_ viewModel: RickAndMortyVM) {
         self.viewModel = viewModel
+        self.viewModel?.delegate = self
     }
     
     private lazy var tableView: UITableView = {
@@ -60,7 +61,6 @@ class CharacterListVC: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupDelegate()
-        setupBindings()
         viewModel.downloadCharacters()
     }
     
@@ -103,14 +103,7 @@ class CharacterListVC: UIViewController {
         searchController.searchBar.delegate = self
     }
     
-    private func setupBindings() {
-        viewModel.onCharactersUpdated = { [weak self] in
-            DispatchQueue.main.async{
-                self?.tableView.reloadData()
-                self?.collectionView.reloadData()
-            }
-        }
-    }
+
     
     @objc private func toggleViewStyle(){
         isTableView.toggle()
@@ -199,6 +192,16 @@ extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
+    }
+}
+
+// MARK: - onUpdateCharacter Delegate
+extension CharacterListVC: onUpdateCharacter {
+    func onCharactersUpdated() {
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadData()
+            self?.collectionView.reloadData()
+        }
     }
 }
 

@@ -2,11 +2,13 @@ import Foundation
 
 class RickAndMortyVM {
     
+    // MARK: - Delegate
+    weak var delegate: onUpdateCharacter?
+    
     private var allCharacters: [Character] = []
     private(set) var characters: [Character] = []
     private(set) var isLoading = false
     private(set) var errorMessage: String?
-    var onCharactersUpdated: (() -> Void)?
     
     private let service : RickAndServiceProtocol
     init(service: RickAndServiceProtocol){
@@ -25,13 +27,13 @@ class RickAndMortyVM {
                     self.allCharacters = response.results ?? []
                     self.characters = self.allCharacters
                     self.isLoading = false
-                    self.onCharactersUpdated?()
+                    self.delegate?.onCharactersUpdated()
                 }
             } catch {
                 await MainActor.run {
                     self.errorMessage = "Bir hata oluştu: \(error.localizedDescription)"
                     self.isLoading = false
-                    self.onCharactersUpdated?()
+                    self.delegate?.onCharactersUpdated()
                 }
             }
         }
@@ -41,7 +43,7 @@ class RickAndMortyVM {
     func filterCharacter(with query: String) {
         guard !query.isEmpty else {
             characters = allCharacters
-            onCharactersUpdated?()
+            delegate?.onCharactersUpdated()
             return
         }
         
@@ -49,7 +51,7 @@ class RickAndMortyVM {
         characters = allCharacters.filter { character in
             character.name?.lowercased().contains(lowercasedQuery) == true
         }
-        onCharactersUpdated?()
+        delegate?.onCharactersUpdated()
     }
 }
 
