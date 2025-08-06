@@ -1,20 +1,25 @@
 import Foundation
 
+// MARK: - Character Update Protocol
+protocol RickAndMortyVMOutput: AnyObject {
+    func onCharactersUpdated()
+}
+
 class RickAndMortyVM {
     
     // MARK: - Delegate
-    weak var delegate: onUpdateCharacter?
+    weak var output: RickAndMortyVMOutput?
     
     private var allCharacters: [Character] = []
     private(set) var characters: [Character] = []
     private(set) var isLoading = false
     private(set) var errorMessage: String?
     
-    private let service : RickAndServiceProtocol
+    private let service: RickAndServiceProtocol
+    
     init(service: RickAndServiceProtocol){
         self.service = service
     }
-    
     
     func downloadCharacters() {
         isLoading = true
@@ -27,13 +32,13 @@ class RickAndMortyVM {
                     self.allCharacters = response.results ?? []
                     self.characters = self.allCharacters
                     self.isLoading = false
-                    self.delegate?.onCharactersUpdated()
+                    self.output?.onCharactersUpdated()
                 }
             } catch {
                 await MainActor.run {
                     self.errorMessage = "Bir hata oluştu: \(error.localizedDescription)"
                     self.isLoading = false
-                    self.delegate?.onCharactersUpdated()
+                    self.output?.onCharactersUpdated()
                 }
             }
         }
@@ -43,7 +48,7 @@ class RickAndMortyVM {
     func filterCharacter(with query: String) {
         guard !query.isEmpty else {
             characters = allCharacters
-            delegate?.onCharactersUpdated()
+            output?.onCharactersUpdated()
             return
         }
         
@@ -51,7 +56,7 @@ class RickAndMortyVM {
         characters = allCharacters.filter { character in
             character.name?.lowercased().contains(lowercasedQuery) == true
         }
-        delegate?.onCharactersUpdated()
+        output?.onCharactersUpdated()
     }
 }
 

@@ -5,23 +5,19 @@ import SDWebImage
 class CharacterListVC: UIViewController {
     
     // MARK: -Properties
-    private var viewModel: RickAndMortyVM!
+    public var viewModel: RickAndMortyVM
     private var characters: [Character] = []
     private var isLoading = false
     private var isTableView = true
     
-    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    init(viewModel: RickAndMortyVM) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+        self.viewModel.output = self
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-    
-    // MARK: - Dependency Injection
-    func setViewModel(_ viewModel: RickAndMortyVM) {
-        self.viewModel = viewModel
-        self.viewModel?.delegate = self
+        fatalError("init(coder:) has not been implemented")
     }
     
     private lazy var tableView: UITableView = {
@@ -103,7 +99,7 @@ class CharacterListVC: UIViewController {
         searchController.searchBar.delegate = self
     }
     
-
+    
     
     @objc private func toggleViewStyle(){
         isTableView.toggle()
@@ -115,88 +111,8 @@ class CharacterListVC: UIViewController {
     }
 }
 
-
-
-// MARK: - TableView
-extension CharacterListVC: UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.characters.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "CharacterListCell", for: indexPath) as? CharacterListCell else {
-            return UITableViewCell()
-        }
-        let character = viewModel.characters[indexPath.row]
-        cell.configure(with: character)
-        return cell
-    }
-}
-
-extension CharacterListVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-           return 120
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let character = viewModel.characters[indexPath.row]
-        let detailsVC = CharacterDetailsVC(character: character)
-        navigationController?.pushViewController(detailsVC, animated: true)
-    }
-}
-
-// MARK: - CollectionView
-extension CharacterListVC: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let character = viewModel.characters[indexPath.row]
-        let detailsVC = CharacterDetailsVC(character: character)
-        navigationController?.pushViewController(detailsVC, animated: true)
-    }
-}
-
-extension CharacterListVC: UICollectionViewDataSource{
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.characters.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CharacterGridCell", for: indexPath) as? CharacterGridCell else {
-            return UICollectionViewCell()
-        }
-        let character = viewModel.characters[indexPath.row]
-        cell.configure(with: character)
-        return cell
-    }
-}
-    
-extension CharacterListVC: UICollectionViewDelegateFlowLayout{
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = (collectionView.bounds.width - 48) / 2
-        return CGSize(width: width, height: width * 1.5)
-    }
-    
-}
-
-// MARK: - Search
-extension CharacterListVC: UISearchResultsUpdating, UISearchBarDelegate {
-    func updateSearchResults(for searchController: UISearchController) {
-        let searchText = searchController.searchBar.text ?? ""
-        // Local filtering olduğu için anlık arama yapabiliyoruz
-        viewModel.filterCharacter(with: searchText)
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.filterCharacter(with: "")
-    }
-    
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder()
-    }
-}
-
 // MARK: - onUpdateCharacter Delegate
-extension CharacterListVC: onUpdateCharacter {
+extension CharacterListVC: RickAndMortyVMOutput {
     func onCharactersUpdated() {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.reloadData()
@@ -204,4 +120,3 @@ extension CharacterListVC: onUpdateCharacter {
         }
     }
 }
-

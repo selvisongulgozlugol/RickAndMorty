@@ -9,9 +9,9 @@ protocol RickAndServiceProtocol{
 
 //MARK: - RickAndMortyService
 class RickAndMortyService : RickAndServiceProtocol {
-
+    
     private let networkService : NetworkServiceProtocol
-   
+    
     init(networkService: NetworkServiceProtocol) {
         self.networkService = networkService
     }

@@ -7,8 +7,7 @@ enum RickAndMortyBuilder {
         let networkService = NetworkService.shared
         let rickAndMortyService: RickAndServiceProtocol = RickAndMortyService(networkService: networkService)
         let viewModel = RickAndMortyVM(service: rickAndMortyService)
-        let characterListVC = CharacterListVC()
-        characterListVC.setViewModel(viewModel)
+        let characterListVC = CharacterListVC(viewModel: viewModel)
         
         return characterListVC
     }
