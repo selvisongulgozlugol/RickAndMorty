@@ -5,10 +5,11 @@ import SDWebImage
 class CharacterListVC: UIViewController {
     
     // MARK: -Properties
-    public var viewModel: RickAndMortyVM
-    private var characters: [Character] = []
+    var viewModel: RickAndMortyVM
     private var isLoading = false
-    private var isTableView = true
+    private var isListLayout = true
+    
+    private var collectionViewManager: CharacterCollectionViewManager?
     
     init(viewModel: RickAndMortyVM) {
         self.viewModel = viewModel
@@ -20,27 +21,12 @@ class CharacterListVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private lazy var tableView: UITableView = {
-        let tableView = UITableView()
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(CharacterListCell.self, forCellReuseIdentifier: "CharacterListCell")
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .systemBackground
-        return tableView
-    }()
-    
     private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 16
-        layout.minimumInteritemSpacing = 16
-        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: self.makeListLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.register(CharacterGridCell.self, forCellWithReuseIdentifier: "CharacterGridCell")
         collectionView.backgroundColor = .systemBackground
-        collectionView.isHidden = true
+        collectionView.isHidden = false
         return collectionView
     }()
     
@@ -74,15 +60,9 @@ class CharacterListVC: UIViewController {
         navigationItem.rightBarButtonItem = toggleButton
         
         
-        view.addSubview(tableView)
         view.addSubview(collectionView)
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
             collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -91,31 +71,73 @@ class CharacterListVC: UIViewController {
     }
     
     private func setupDelegate(){
-        tableView.delegate = self
-        tableView.dataSource = self
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        // Collection View Manager
+        collectionViewManager = CharacterCollectionViewManager(dataProvider: self, actionDelegate: self)
+        collectionView.delegate = collectionViewManager
+        collectionView.dataSource = collectionViewManager
+        
+        // Search delegates
         searchController.searchResultsUpdater = self
         searchController.searchBar.delegate = self
     }
     
+    private func makeListLayout() -> UICollectionViewLayout {
+        var config = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        config.showsSeparators = false
+        return UICollectionViewCompositionalLayout.list(using: config)
+    }
     
+    private func makeGridLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 16
+        layout.minimumInteritemSpacing = 16
+        layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        return layout
+    }
     
     @objc private func toggleViewStyle(){
-        isTableView.toggle()
-        tableView.isHidden = !isTableView
-        collectionView.isHidden = isTableView
+        isListLayout.toggle()
+        let newLayout = isListLayout ? makeListLayout() : makeGridLayout()
+        collectionView.setCollectionViewLayout(newLayout, animated: true)
         
-        let imageName = isTableView ? "square.grid.2x2" : "list.bullet"
+        let imageName = isListLayout ? "square.grid.2x2" : "list.bullet"
         navigationItem.rightBarButtonItem?.image = UIImage(systemName: imageName)
     }
 }
 
-// MARK: - onUpdateCharacter Delegate
+// MARK: - CharacterCollectionViewDataProvider
+extension CharacterListVC: CharacterCollectionViewDataProvider {
+    var characters: [Character] {
+        return viewModel.characters
+    }
+    
+    func numberOfItems() -> Int {
+        return viewModel.characters.count
+    }
+    
+    func character(at index: Int) -> Character {
+        return viewModel.characters[index]
+    }
+}
+
+// MARK: - CharacterCollectionViewActionDelegate
+extension CharacterListVC: CharacterCollectionViewActionDelegate {
+    func didSelectCharacter(_ character: Character) {
+        let detailsVC = CharacterDetailsVC(character: character)
+        navigationController?.pushViewController(detailsVC, animated: true)
+    }
+    
+    func cellSize(for collectionView: UICollectionView) -> CGSize {
+        let width = (collectionView.bounds.width - 48) / 2
+        return CGSize(width: width, height: width * 1.5)
+    }
+}
+
+// MARK: - RickAndMortyVMOutput
 extension CharacterListVC: RickAndMortyVMOutput {
     func onCharactersUpdated() {
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.reloadData()
             self?.collectionView.reloadData()
         }
     }
